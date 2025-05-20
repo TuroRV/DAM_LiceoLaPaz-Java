@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.Scanner;
 
+
 public class Main {
 
     public static HashMap<Integer, User> users = new HashMap<>();
