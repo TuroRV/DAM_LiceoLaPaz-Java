@@ -31,7 +31,114 @@ public class Main {
                 case 2:
                     addDepartments();
                     break;
+                case 3:
+                    modifyDepartment();
+                    break;
+                case 4:
+                    deleteDepartment();
+                    break;
+                case 5:
+                    exportDepartments();
+                    break;
             }
+        }
+    }
+
+    private static void exportDepartments() {
+        if (departments.isEmpty()) {
+            System.out.println("No hay departamentos a exportar.");
+            return;
+        }
+        System.out.println("Introduzca la ruta del archivo para exportar los departamentos");
+        String destinationPath = readString();
+        File file = new File(destinationPath);
+        try {
+            FileWriter fw = new FileWriter(file);
+            BufferedWriter bw = new BufferedWriter(fw);
+            PrintWriter pw = new PrintWriter(bw);
+            pw.println("num_depto;nombre;nombre_corto;planta;cif_director;correo_e");
+            for (Department department : departments) {
+                pw.println(department);
+            }
+            pw.close();
+            System.out.println("Departamentos exportados correctamente");
+        } catch (IOException e) {
+            System.out.println("Error escribiendo fichero");
+        }
+
+    }
+
+    private static void deleteDepartment() {
+        System.out.println("Introduzca el id del departamento a borrar:");
+        int searchDepNumber = readInt();
+        boolean hasDepartment = false;
+        for (Department department : departments) {
+            if (department.getDepNumber()!=searchDepNumber) {
+                hasDepartment = false;
+            } else {
+                hasDepartment = true;
+                System.out.println("Está seguro de que desea borrar el departamento " + department.getDepNumber() + " " + department.getDepName() + "?");
+                System.out.println("S/N");
+                String answer = readString();
+                while (!answer.equalsIgnoreCase("s") && !(answer.equalsIgnoreCase("n"))) {
+                    System.out.println("Introduzca una opción válida");
+                    answer = readString();
+                }
+                if (answer.equalsIgnoreCase("S")) {
+                    departments.remove(department);
+                    System.out.println("Departamento borrado correctamente");
+                    return;
+                } else if (answer.equalsIgnoreCase("N")) {
+                    System.out.println("Borrado cancelado por el usuario");
+                    return;
+                }
+            }
+        }
+    }
+
+    private static void modifyDepartment() {
+        System.out.println("Introduzca el id del departamento a modificar:");
+        int searchDepNumber = readInt();
+        boolean hasDepartment = false;
+        for (Department department : departments) {
+            if (department.getDepNumber()!=searchDepNumber) {
+                hasDepartment = false;
+            } else {
+                hasDepartment = true;
+                System.out.println("Introudzca el nuevo nombre de departamento:");
+                String newName = readString();
+                department.setDepName(newName);
+                System.out.println("Introduzca el nuevo nombre abreviado de departamento:");
+                String newDepShortName = readString();
+                department.setDepShortName(newDepShortName);
+                System.out.println("Introduzca el nuevo número de piso de departamento:");
+                try {
+                int newDepFloorNumber = readInt();
+                department.setDepFloor(newDepFloorNumber);
+                System.out.println("Introduzca el CIF de director de departamento con formato \"00000000-X\": ");
+                String newDirectorCif = readString();
+                if (!checkCIF(newDirectorCif)) {
+                    System.out.println("Error en el formato del CIF");
+                    return;
+                }
+                department.setDirectorCif(newDirectorCif);
+                System.out.println("Introduzca el nuevo email de departamento:");
+                String newEmail = readString();
+                if (!checkEmail(newEmail)) {
+                    System.out.println("Error en el formato del email");
+                    return;
+                }
+                department.setEmail(newEmail);
+                System.out.println("Todos los datos actualizados correctamente");
+                } catch (InputMismatchException e) {
+                    System.out.println("El número de departamento tiene que ser un número entero");
+                }
+
+            }
+        }
+
+        if (!hasDepartment) {
+            System.out.println("Departamento no encontrado");
         }
     }
 
@@ -39,7 +146,34 @@ public class Main {
         System.out.println("Introduzca el número de departamento a añadir");
         try {
             int depNumber = readInt();
-            if (departments.contains(depNumber)) {xx}
+            for (Department department: departments) {
+                if (department.getDepNumber() == depNumber) {
+                    System.out.println("Ya hay un departamento registrado con ese número");
+                    return;
+                }
+            }
+            System.out.println("Introduzca el nombre del departamento:");
+            String depName = readString();
+            System.out.println("Introduzca el nombre abreviado del departamento:");
+            String depShortName = readString();
+            System.out.println("Introduzca el número de piso del departamento:");
+            int depFloor = readInt();
+            System.out.println("Introduzca el CIF de director de departamento con formato \"00000000-X\": ");
+            String directorCif = readString();
+            if (!checkCIF(directorCif)) {
+                System.out.println("Formato de CIF incorrecto");
+                return;
+            }
+            System.out.println("Introduzca el email de departamento:");
+            String email = readString();
+            if (!checkEmail(email)) {
+                System.out.println("El formato de email es incorrecto.");
+                return;
+            }
+
+            Department department = new Department(depNumber, depName, depShortName, depFloor, directorCif, email);
+            departments.add(department);
+            System.out.println("Departamento añadido correctamente.");
 
         } catch (InputMismatchException e) {
             System.out.println("El número de departamento tiene que ser un número entero");
